@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1021851511933",
+    "project_id": "eliassprinksens",
+    "storage_bucket": "eliassprinksens.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021851511933:android:2156fdf3357c4cf7af1514",
+        "android_client_info": {
+          "package_name": "com.example.sprink_sense_smi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVe_1CiW31Ag0Gud2Y5JOcU3DnEYi5Nxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
