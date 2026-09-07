@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sprink_sense_smi/components/constant.dart';
 import 'package:sprink_sense_smi/components/mybutton.dart';
 import 'package:sprink_sense_smi/components/mytextfield.dart';
@@ -60,6 +62,49 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ));
         });
+  }
+
+  // Sign in with Google. Uses Firebase's popup flow on web, and the native
+  // google_sign_in flow on Android/iOS.
+  Future<void> signInWithGoogle() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      if (kIsWeb) {
+        await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+      } else {
+        final googleUser = await GoogleSignIn().signIn();
+
+        // User closed the Google sign-in sheet without picking an account.
+        if (googleUser == null) {
+          Navigator.pop(context);
+          return;
+        }
+
+        final googleAuth = await googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      showErrorMessage(e.code);
+    } catch (e) {
+      Navigator.pop(context);
+      showErrorMessage('Google sign-in failed. Please try again.');
+    }
   }
 
   @override
@@ -164,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 15, vertical: 10),
                         ),
-                        onPressed: () {},
+                        onPressed: signInWithGoogle,
                         icon: Image.asset('lib/images/Google.png', height: 30),
                         label: Text("Google",
                             style: TextStyle(color: Colors.black)),
@@ -181,7 +226,13 @@ class _LoginPageState extends State<LoginPage> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 15, vertical: 10),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Apple Sign-In is not available yet.'),
+                            ),
+                          );
+                        },
                         icon: Image.asset('lib/images/Apple.png', height: 30),
                         label: Text("Apple",
                             style: TextStyle(color: Colors.black)),
